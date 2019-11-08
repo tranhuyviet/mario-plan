@@ -6,11 +6,29 @@ export const createProject = project => {
   //   };
 
   //use thunk:
-  return (dispatch, getState) => {
+  return (dispatch, getState, { getFirebase, getFirestore }) => {
     //make async call to database
-    dispatch({
-      type: "CREATE_PROJECT",
-      project: project
-    });
+    const firestore = getFirestore();
+    firestore
+      .collection("projects")
+      .add({
+        ...project,
+        authorFirstName: "Viet",
+        authorLastName: "Tran",
+        authorId: 12345,
+        createdAt: new Date()
+      })
+      .then(() => {
+        dispatch({
+          type: "CREATE_PROJECT",
+          project: project
+        });
+      })
+      .catch(error => {
+        dispatch({
+          type: "CREATE_PROJECT_ERROR",
+          error
+        });
+      });
   };
 };
